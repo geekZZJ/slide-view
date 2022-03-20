@@ -1,5 +1,5 @@
 // slide-view/slide-view.js
-const _windowWidth = wx.getSystemInfoSync().windowWidth // (px)
+const _windowWidth = wx.getSystemInfoSync().windowWidth; // (px)
 Component({
   /**
    * 组件的属性列表
@@ -11,7 +11,7 @@ Component({
     //  组件显示区域的宽度 (rpx)
     width: {
       type: Number,
-      value: 750 // 750rpx 即整屏宽
+      value: 750, // 750rpx 即整屏宽
     },
     //  组件显示区域的高度 (rpx)
     height: {
@@ -21,8 +21,8 @@ Component({
     //  组件滑动显示区域的宽度 (rpx)
     slideWidth: {
       type: Number,
-      value: 0
-    }
+      value: 0,
+    },
   },
 
   /**
@@ -40,59 +40,63 @@ Component({
    * 组件的方法列表
    */
   ready() {
-    this.updateRight()
+    this.updateRight();
   },
   methods: {
     updateRight() {
       // 获取右侧滑动显示区域的宽度
-      const that = this
-      const query = wx.createSelectorQuery().in(this)
-      query.select('.right').boundingClientRect(function (res) {
-        that._slideWidth = res.width
-        that._threshold = res.width / 2
-        that._viewWidth = that.data.width + res.width * (750 / _windowWidth)
-        that.setData({
-          viewWidth: that._viewWidth
+      const that = this;
+      const query = wx.createSelectorQuery().in(this);
+      query
+        .select(".right")
+        .boundingClientRect(function (res) {
+          that._slideWidth = res.width;
+          that._threshold = res.width / 2;
+          that._viewWidth = that.data.width + res.width * (750 / _windowWidth);
+          that.setData({
+            viewWidth: that._viewWidth,
+          });
         })
-      }).exec()
+        .exec();
     },
     onTouchStart(e) {
-      this._startX = e.changedTouches[0].pageX
+      this._startX = e.changedTouches[0].pageX;
     },
     //  当滑动范围超过阈值自动完成剩余滑动
     onTouchEnd(e) {
-      this._endX = e.changedTouches[0].pageX
-      const {_endX, _startX, _threshold} = this
-      if (_endX > _startX && this.data.out === false) return
+      this._endX = e.changedTouches[0].pageX;
+      const { _endX, _startX, _threshold } = this;
+      if (_endX > _startX && this.data.out === false && this.data.x === 0)
+        return;
       if (_startX - _endX >= _threshold) {
         this.setData({
-          x: -this._slideWidth
-        })
+          x: -this._slideWidth,
+        });
       } else if (_startX - _endX < _threshold && _startX - _endX > 0) {
         this.setData({
-          x: 0
-        })
+          x: 0,
+        });
       } else if (_endX - _startX >= _threshold) {
         this.setData({
-          x: 0
-        })
+          x: 0,
+        });
       } else if (_endX - _startX < _threshold && _endX - _startX > 0) {
         this.setData({
-          x: -this._slideWidth
-        })
+          x: -this._slideWidth,
+        });
       }
     },
     //  根据滑动的范围设定是否允许movable-view出界
     onChange(e) {
       if (!this.data.out && e.detail.x < -this._threshold) {
         this.setData({
-          out: true
-        })
+          out: true,
+        });
       } else if (this.data.out && e.detail.x >= -this._threshold) {
         this.setData({
-          out: false
-        })
+          out: false,
+        });
       }
-    }
-  }
-})
+    },
+  },
+});
